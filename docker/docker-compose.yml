@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  mydb:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sofipass
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postgresql/data
