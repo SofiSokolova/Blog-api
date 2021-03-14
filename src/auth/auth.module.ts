@@ -6,6 +6,9 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
+import { RefreshTokensRepository } from './refresh-token/refresh-tokens.repository';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { RefreshToken } from './refresh-token/refresh-token.entity';
 
 @Module({
   imports: [
@@ -15,8 +18,9 @@ import { JwtStrategy } from './jwt.strategy';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '3600s' },
     }),
+    SequelizeModule.forFeature([RefreshToken]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokensRepository],
   exports: [AuthService],
 })
 export class AuthModule {}

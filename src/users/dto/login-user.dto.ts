@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsString,
@@ -6,14 +5,11 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Match } from '../../decorators/match.decorator';
 
-export class CreateUserDto {
-  @ApiProperty()
+export class LoginUserDto {
   @IsEmail()
   readonly email: string;
 
-  @ApiProperty()
   @IsString()
   @MinLength(8, { message: 'too short' })
   @MaxLength(20, { message: 'too long' })
@@ -21,11 +17,4 @@ export class CreateUserDto {
     message: 'password too weak',
   })
   readonly password: string;
-
-  @ApiProperty()
-  @IsString()
-  @MinLength(4)
-  @MaxLength(20)
-  @Match('password', { message: 'does not match' })
-  readonly passwordConfirm: string;
 }
