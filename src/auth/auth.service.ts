@@ -21,7 +21,7 @@ export class AuthService {
     const isMatch = user && (await bcrypt.compare(pass, user.passwordHash));
     if (isMatch) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = user;
+      const { passwordHash, ...result } = user; //the problem is here
       return result;
     }
     return null;
@@ -29,15 +29,15 @@ export class AuthService {
   async login(userDto: LoginUserDto) {
     const user = await this.validateUser(userDto.email, userDto.password);
 
-    if (!user){
+    if (!user) {
       throw new UnauthorizedException();
     }
     const payload = {
       email: (user as any).dataValues.email,
       id: (user as any).dataValues.id,
     };
-  //  console.log(user.email)
-   // console.log((user as any).dataValues.id);
+  // console.log(user.email)
+  // console.log((user as any).dataValues.id);
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: (

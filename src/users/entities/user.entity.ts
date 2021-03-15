@@ -3,7 +3,6 @@ import {
   Column,
   Model,
   DataType,
-  PrimaryKey,
   BeforeCreate,
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
@@ -43,37 +42,3 @@ export class User extends Model<User> {
     }
   }
 }
-
-
-
-/* export type UserDocument = User & Document;
-
-@Schema()
-export class User {
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
-  email: string;
-
-  @Prop({ required: true })
-  passwordHash: string;
-
-  @Prop({ required: true })
-  confirmed: boolean;
-
-  @Prop({ required: true })
-  salt: string;
-}
-
-export const UserSchema = SchemaFactory.createForClass(User); */
-
-
-
-/* export interface User extends Document {
-  passwordHash: string;
-} */
-
-/* UserSchema.methods.validatePassword = async function validatePassword(data) {
-  return bcrypt.compare(data, this.passwordHash);
-}; */

@@ -9,9 +9,9 @@ export const databaseProviders = [
       const sequelize = new Sequelize({
         dialect: 'postgres',
         host: 'localhost',
-        port: 5432,
-        username: 'postgres',
-        password: 'sofipass',
+        port: parseInt(process.env.DATABASE_HOST),
+        username: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
         database: 'test_pg',
       });
       sequelize.addModels([User, RefreshToken]);
