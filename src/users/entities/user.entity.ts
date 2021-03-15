@@ -30,15 +30,12 @@ export class User extends Model<User> {
     allowNull: false,
   })
   passwordHash: string;
+  
   @BeforeCreate
   static async generatePasswordHash(user: User) {
-    try {
       user.passwordHash = await bcrypt.hash(
         user.passwordHash,
         await bcrypt.genSalt(10),
       );
-    } catch (err) {
-      console.error(err);
     }
   }
-}

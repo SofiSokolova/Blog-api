@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { RefreshTokensRepository } from './refresh-token/refresh-tokens.repository';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { RefreshToken } from './refresh-token/refresh-token.entity';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RefreshToken } from './refresh-token/refresh-token.entity';
     }),
     SequelizeModule.forFeature([RefreshToken]),
   ],
+  controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokensRepository],
   exports: [AuthService],
 })

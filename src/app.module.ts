@@ -4,21 +4,24 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { RefreshToken } from './auth/refresh-token/refresh-token.entity';
-import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     AuthModule,
+    UsersModule,
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: 'localhost',
+      host: process.env.DATABASE_HOST,
       port: parseInt(process.env.DATABASE_HOST),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
-      database: 'test_pg',
-      models: [User, RefreshToken],
+      database: process.env.DATABASE_NAME,
+      autoLoadModels: true,
+      sync: {
+        alter: true,
+      },
     }),
   ],
   controllers: [AppController],

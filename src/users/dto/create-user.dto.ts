@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsString,
@@ -9,11 +8,9 @@ import {
 import { Match } from '../../decorators/match.decorator';
 
 export class CreateUserDto {
-  @ApiProperty()
   @IsEmail()
   readonly email: string;
 
-  @ApiProperty()
   @IsString()
   @MinLength(8, { message: 'too short' })
   @MaxLength(20, { message: 'too long' })
@@ -22,7 +19,6 @@ export class CreateUserDto {
   })
   readonly password: string;
 
-  @ApiProperty()
   @IsString()
   @MinLength(4)
   @MaxLength(20)

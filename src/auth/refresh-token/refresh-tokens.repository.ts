@@ -10,8 +10,8 @@ export class RefreshTokensRepository {
     ttl: number = 1000 * 60 * 60 * 24,
   ): Promise<RefreshToken> {
     const token = new RefreshToken();
-    token.user_id = userId;
-    token.is_revoked = false;
+    token.userId = userId;
+    token.isRevoked = false;
 
     const expiration = new Date();
     expiration.setTime(expiration.getTime() + ttl);
@@ -23,11 +23,9 @@ export class RefreshTokensRepository {
     return token.save();
   }
 
-  public async findTokenById(id: number): Promise<RefreshToken | null> {
-    return RefreshToken.findOne({
-      where: {
-        id,
-      },
-    });
+  public async findTokenByUserId(userId: number): Promise<RefreshToken | null> {
+
+    return RefreshToken.findOne({ where: { userId } });
   }
+
 }
