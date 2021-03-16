@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Table({ tableName: 'refresh_tokens', underscored: true })
-export class RefreshToken extends Model<RefreshToken> {
+@Table({ tableName: 'refresh_tokens', underscored: false })
+export class RefreshToken extends Model {
   @Column({
     type: DataType.INTEGER,
     unique: true,

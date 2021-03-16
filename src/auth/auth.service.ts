@@ -7,12 +7,9 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from 'src/users/entities/user.entity';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { InjectModel } from '@nestjs/sequelize';
-import { CreateRefreshTokenDto } from './refresh-token/refresh-token.dto';
-import { RefreshTokensService } from './refresh-token/refresh-token.service';
+import { CreateRefreshTokenDto } from '../refresh-token/refresh-token.dto';
+import { RefreshTokensService } from '../refresh-token/refresh-token.service';
 
 @Injectable()
 export class AuthService {
@@ -20,17 +17,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private refreshTokenService: RefreshTokensService,
-    @InjectModel(User) private userModel: typeof User,
-  ) {}
-
-  async create(user: CreateUserDto): Promise<User> {
-    const userModel = {
-      email: user.email,
-      passwordHash: user.password,
-    } as User;
-
-    return await this.userModel.create<User>(userModel);
-  }
+  ) { }
 
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email);
@@ -67,12 +54,10 @@ export class AuthService {
       tokenDto.userId,
     );
 
-    console.log(token);
     if (!token) {
       throw new NotFoundException();
     }
     if ((token as any).dataValues.tokenHash !== tokenDto.tokenHash) {
-      // console.log((token as any).dataValues.tokenHash)
       throw new BadRequestException();
     }
 

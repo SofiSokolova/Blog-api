@@ -7,14 +7,14 @@ import {
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 
-@Table
-export class User extends Model<User> {
+@Table({ tableName: 'Users', underscored: false })
+export class User extends Model {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
     primaryKey: true,
     unique: true,
-    field: 'id',
+   // field: 'id',
   })
   id: number;
 
@@ -30,12 +30,12 @@ export class User extends Model<User> {
     allowNull: false,
   })
   passwordHash: string;
-  
+
   @BeforeCreate
   static async generatePasswordHash(user: User) {
-      user.passwordHash = await bcrypt.hash(
-        user.passwordHash,
-        await bcrypt.genSalt(10),
-      );
-    }
+    user.passwordHash = await bcrypt.hash(
+      user.passwordHash,
+      await bcrypt.genSalt(10),
+    );
   }
+}
