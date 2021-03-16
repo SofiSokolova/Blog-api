@@ -6,10 +6,10 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
-import { RefreshTokensRepository } from './refresh-token/refresh-tokens.repository';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { RefreshToken } from './refresh-token/refresh-token.entity';
 import { AuthController } from './auth.controller';
+import { RefreshTokensService } from './refresh-token/refresh-token.service';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { AuthController } from './auth.controller';
     SequelizeModule.forFeature([RefreshToken]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokensRepository],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokensService],
   exports: [AuthService],
 })
 export class AuthModule {}

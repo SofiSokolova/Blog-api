@@ -1,22 +1,26 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { RefreshTokensRepository } from './refresh-token/refresh-tokens.repository';
 import { User } from 'src/users/entities/user.entity';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateRefreshTokenDto } from './refresh-token/refresh-token.dto';
+import { RefreshTokensService } from './refresh-token/refresh-token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private refreshTokensRepository: RefreshTokensRepository,
+    private refreshTokenService: RefreshTokensService,
     @InjectModel(User) private userModel: typeof User,
-
   ) {}
 
   async create(user: CreateUserDto): Promise<User> {
@@ -52,40 +56,37 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload),
-      refresh_token: (
-        await this.refreshTokensRepository.createRefreshToken(
-          (user as any).dataValues.id,
-        )
-      ).tokenHash,
+      refresh_token: await this.refreshTokenService.createRefreshToken(
+        (user as any).dataValues.id,
+      ),
     };
   }
 
-async updateTokens(tokenDto: CreateRefreshTokenDto){
-  const token = await this.refreshTokensRepository.findTokenByUserId(tokenDto.userId)
+  async updateTokens(tokenDto: CreateRefreshTokenDto) {
+    const token = await this.refreshTokenService.findTokenByUserId(
+      tokenDto.userId,
+    );
 
-  console.log(token)
-  if(!token){
-     throw new NotFoundException()
-  }
-  if ((token as any).dataValues.tokenHash !== tokenDto.tokenHash){
-   // console.log((token as any).dataValues.tokenHash)
-    throw new BadRequestException()
-  }
+    console.log(token);
+    if (!token) {
+      throw new NotFoundException();
+    }
+    if ((token as any).dataValues.tokenHash !== tokenDto.tokenHash) {
+      // console.log((token as any).dataValues.tokenHash)
+      throw new BadRequestException();
+    }
 
-  const user = await this.usersService.findOneById(tokenDto.userId);
-  const payload = {
-    id: tokenDto.userId,
-    email: (user as any).dataValues.email,
-  };
+    const user = await this.usersService.findOneById(tokenDto.userId);
+    const payload = {
+      id: tokenDto.userId,
+      email: (user as any).dataValues.email,
+    };
 
-  return {
-    access_token: this.jwtService.sign(payload),
-    refresh_token: (
-      await this.refreshTokensRepository.createRefreshToken(
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: await this.refreshTokenService.createRefreshToken(
         tokenDto.userId,
-      )
-    ).tokenHash,
-  };
+      ),
+    };
   }
-
 }
