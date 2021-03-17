@@ -17,11 +17,11 @@ import { UsersModule } from './users/users.module';
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
-      logging: false,
+      logging: true,
       sync: {
         force: true,
       },
     }),
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,29 +1,26 @@
-version: '3.8'
+version: '3'
 services:
+
   redis:
-    restart: always
-    image: bitnami/redis:latest
-    env_file:
-      - .env
-    ports:
-      - 6379:6379
-    volumes:
-      - ./volumes/redis_data:/data
+    image: 'bitnami/redis:latest'
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-  mydb:
+    ports:
+      - '${REDIS_PORT_EXT:-6379}:6379'
+    volumes:
+      - ./volumes/redis_data:/data
+
+  postgres:
     image: postgres
-    restart: always
     env_file:
       - .env
     ports:
       - '${POSTGRES_PORT_EXT:-5432}:5432'
     volumes:
-      - postgres:/var/lib/postgresql/data
-  volumes:
-    postgres:
-      external: true
-    redis_data:
-      driver: local
+      - ./volumes/postgres/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+    driver: local
