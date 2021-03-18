@@ -42,6 +42,7 @@ export class AuthService {
     };
 
     return {
+      userId: payload.id,
       access_token: this.jwtService.sign(payload),
       refresh_token: await this.refreshTokenService.createRefreshToken(
         (user as any).dataValues.id,
