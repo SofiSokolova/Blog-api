@@ -7,14 +7,14 @@ import {
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 
-@Table({ tableName: 'Users', underscored: false })
+@Table
 export class User extends Model {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
     primaryKey: true,
     unique: true,
-   // field: 'id',
+    field: 'id',
   })
   id: number;
 

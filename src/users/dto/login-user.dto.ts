@@ -5,7 +5,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { regExpForPassValidation } from '../../../constants';
+import { REG_EXP_FOR_PASS_VALIDATION } from '../../../constants';
 import {
   passTooLong,
   passTooShort,
@@ -19,7 +19,7 @@ export class LoginUserDto {
   @IsString()
   @MinLength(8, { message: passTooShort })
   @MaxLength(20, { message: passTooLong })
-  @Matches(regExpForPassValidation, {
+  @Matches(REG_EXP_FOR_PASS_VALIDATION, {
     message: passTooWeak,
   })
   readonly password: string;

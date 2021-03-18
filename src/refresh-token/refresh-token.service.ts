@@ -1,35 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { RefreshToken } from './refresh-token.entity';
-import { InjectModel } from '@nestjs/sequelize';
-import { dayInMilliseconds } from '../../constants';
+import { DAY_IN_MILLISECONDS } from '../../constants';
 import { randomHash } from 'src/helper/randomHash';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class RefreshTokensService {
-  constructor(
-    @InjectModel(RefreshToken) private refreshTokenModel: typeof RefreshToken,
-  ) {}
+  constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
 
-  public async createRefreshToken(
-    userId: number,
-    ttl: number = dayInMilliseconds,
-  ): Promise<string> {
-    const expiration = new Date();
-    expiration.setTime(expiration.getTime() + ttl);
+  public async createRefreshToken(userId: number): Promise<string> {
+    await this.cache.set(String(userId), randomHash(), {
+      ttl: DAY_IN_MILLISECONDS,
+    });
 
-    const randomtokenHash = await randomHash();
-    const token = {
-      userId: userId,
-      isRevoked: false,
-      expires: expiration,
-      tokenHash: randomtokenHash,
-    } as RefreshToken;
-    const [{ tokenHash }] = await this.refreshTokenModel.upsert(token);
-
-    return tokenHash;
+    return await this.findTokenByUserId(userId);
   }
 
-  public async findTokenByUserId(userId: number): Promise<RefreshToken | null> {
-    return this.refreshTokenModel.findOne({ where: { userId } });
+  public async findTokenByUserId(userId: number): Promise<string> {
+    return await this.cache.get(String(userId));
   }
 }

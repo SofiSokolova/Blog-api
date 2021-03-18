@@ -17,7 +17,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private refreshTokenService: RefreshTokensService,
-  ) { }
+  ) {}
 
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email);
@@ -58,7 +58,7 @@ export class AuthService {
     if (!token) {
       throw new NotFoundException();
     }
-    if ((token as any).dataValues.tokenHash !== tokenDto.tokenHash) {
+    if (token !== tokenDto.tokenHash) {
       throw new BadRequestException();
     }
 

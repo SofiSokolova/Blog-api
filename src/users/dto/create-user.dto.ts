@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Match } from '../../decorators/match.decorator';
-import { regExpForPassValidation } from '../../../constants';
+import { REG_EXP_FOR_PASS_VALIDATION } from '../../../constants';
 import {
   passDoesNotMatch,
   passTooLong,
@@ -21,7 +21,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(8, { message: passTooShort })
   @MaxLength(20, { message: passTooLong })
-  @Matches(regExpForPassValidation, {
+  @Matches(REG_EXP_FOR_PASS_VALIDATION, {
     message: passTooWeak,
   })
   readonly password: string;
