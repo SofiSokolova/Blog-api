@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
 import { UsersModule } from './users/users.module';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
     AuthModule,
-    UsersModule,
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -23,5 +24,6 @@ import { UsersModule } from './users/users.module';
       },
     }),
   ],
+  providers: [],
 })
 export class AppModule {}
