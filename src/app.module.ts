@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './auth/auth.module';
+import { configFactory } from './config.service';
+
+const config = configFactory();
 
 @Module({
   imports: [
@@ -9,11 +12,11 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
+      host: config.host,
+      port: config.port,
+      username: config.username,
+      password: config.password,
+      database: config.database,
       autoLoadModels: true,
       logging: true,
       sync: {
@@ -21,6 +24,11 @@ import { AuthModule } from './auth/auth.module';
       },
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: 'config',
+      useValue: config,
+    },
+  ],
 })
 export class AppModule {}

@@ -7,6 +7,8 @@ import {
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../roles/role.enum';
+import { configFactory } from 'src/config.service';
+
 //import { DataTypes } from 'sequelize/types';
 
 @Table
@@ -43,7 +45,7 @@ export class User extends Model {
   static async generatePasswordHash(user: User) {
     user.passwordHash = await bcrypt.hash(
       user.passwordHash,
-      await bcrypt.genSalt(10),
+      await bcrypt.genSalt(configFactory().salt),
     );
   }
 }
