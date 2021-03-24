@@ -1,17 +1,16 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { AuthService } from './auth.service';
-import { CreateRefreshTokenDto } from '../token/dto/refresh-token.dto';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { TokenService } from 'src/token/token.service';
+import { CreateRefreshTokenDto } from 'src/token/dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    private readonly tokenService: TokenService,
   ) {}
 
   @Post('register')
@@ -26,6 +25,6 @@ export class AuthController {
 
   @Post('refresh')
   async refreshTokens(@Body() refreshToken: CreateRefreshTokenDto) {
-    return this.tokenService.updateTokens(refreshToken);
+    return this.authService.updateTokens(refreshToken);
   }
 }

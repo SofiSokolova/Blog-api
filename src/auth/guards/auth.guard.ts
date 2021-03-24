@@ -1,3 +1,5 @@
+import { Inject } from '@nestjs/common';
+import { forwardRef } from '@nestjs/common';
 import {
   Injectable,
   CanActivate,
@@ -8,13 +10,13 @@ import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(
+   // @Inject(forwardRef(() => TokenService))
+    private readonly tokenService: TokenService,
+  ) {}
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    if (
-      !request.headers.authorization ||
-      request.headers.authorization.replace(/ [\s\S]+/, '') !== 'Bearer'
-    ) {
+    if (!request.headers.authorization) {
       throw new UnauthorizedException();
     }
 

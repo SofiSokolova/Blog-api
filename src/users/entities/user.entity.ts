@@ -6,6 +6,8 @@ import {
   BeforeCreate,
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
+import { Role } from '../roles/role.enum';
+//import { DataTypes } from 'sequelize/types';
 
 @Table
 export class User extends Model {
@@ -30,6 +32,12 @@ export class User extends Model {
     allowNull: false,
   })
   passwordHash: string;
+
+  @Column({
+    type: DataType.STRING, //TODO DataType.ENUM({ values: Object.values(Role) })
+    defaultValue: Role.USER,
+  })
+  role: Role;
 
   @BeforeCreate
   static async generatePasswordHash(user: User) {

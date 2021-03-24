@@ -13,7 +13,7 @@ export class UsersService {
       passwordHash: user.password,
     } as User;
 
-    return await this.userModel.create<User>(userModel);
+    return await this.userModel.create(userModel);
   }
 
   async findOneByEmail(email: string): Promise<User> {
