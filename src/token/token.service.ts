@@ -5,19 +5,18 @@ import { User } from 'src/users/entities/user.entity';
 import { DAY_IN_MILLISECONDS } from '../../constants';
 import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { Config } from 'src/config.service';
+import { configFactory } from 'src/config.service';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
-    @Inject('config') private readonly config: Config,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) { }
 
   async decodeToken(token: string) {
     return await this.jwtService.verify(token, {
-      secret: this.config.secretOrKey,
+      secret: configFactory().secretOrKey,
     });
   }
 
@@ -39,7 +38,7 @@ export class TokenService {
         exp: expIn,
         role: user.role,
       },
-      { secret: this.config.secretOrKey },
+      { secret: configFactory().secretOrKey },
     );
   }
 

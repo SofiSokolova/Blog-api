@@ -1,21 +1,28 @@
+import { UnauthorizedException } from '@nestjs/common';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { TokenService } from 'src/token/token.service';
+import { Role } from 'src/users/roles/role.enum';
+import { UsersService } from 'src/users/users.service';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log('guards')
-    if (!roles) {
-      return true;
-    }
+  async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    const hasRole = () =>
-      user.roles.some((role) => !!roles.find((item) => item === role));
-
-    return user && user.roles && hasRole();
+    if (!request.headers.authorization) {
+      throw new UnauthorizedException();
+    }
+    const accessToken = request.headers.authorization.replace('Bearer ', '');
+    const decoded = await this.tokenService.decodeToken(accessToken);
+    const user = await this.usersService.findOneById(decoded.id);
+    if (user.role !== Role.ADMIN) {
+      throw new UnauthorizedException();
+    }
+    return true;
   }
 }

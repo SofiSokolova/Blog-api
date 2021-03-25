@@ -7,7 +7,7 @@ import {
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../roles/role.enum';
-import { configFactory } from 'src/config.service';
+import { configFactory } from '../../config.service';
 
 //import { DataTypes } from 'sequelize/types';
 

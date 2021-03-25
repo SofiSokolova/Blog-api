@@ -4,8 +4,8 @@ import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { ConfigModule } from '@nestjs/config';
-import { CacheModule } from 'src/cache/cache.module';
-import { TokenModule } from 'src/token/token.module';
+import { CacheModule } from '../cache/cache.module';
+import { TokenModule } from '../token/token.module';
 
 @Module({
   imports: [
