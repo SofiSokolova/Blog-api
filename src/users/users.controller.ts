@@ -1,5 +1,4 @@
 import { Controller, Request, UseGuards, Get } from '@nestjs/common';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from './roles/role.enum';
@@ -10,14 +9,15 @@ export class UsersController {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
 
-  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    return 'Hi, Admin';
   }
 
+  @Roles(Role.ADMIN, Role.USER)
   @Get('post')
   getPost(@Request() req) {
-    return req.user;
+    return 'Hi, user';
   }
 }

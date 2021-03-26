@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './auth/auth.module';
-import { configFactory } from './config.service';
-
-const config = configFactory();
+import { ConfigModule, config } from './config/config.module';
 
 @Module({
   imports: [
+    ConfigModule,
     AuthModule,
-    ConfigModule.forRoot(),
     SequelizeModule.forRoot({
       dialect: 'postgres',
       host: config.host,
@@ -23,12 +20,6 @@ const config = configFactory();
         alter: true,
       },
     }),
-  ],
-  providers: [
-    {
-      provide: 'config',
-      useValue: config,
-    },
   ],
 })
 export class AppModule {}

@@ -1,22 +1,23 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ONE_HOUR_IN_SECONDS } from '../../constants';
-import { User } from 'src/users/entities/user.entity';
+import { CONFIG, ONE_HOUR_IN_SECONDS } from '../../constants';
 import { DAY_IN_MILLISECONDS } from '../../constants';
 import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { configFactory } from 'src/config.service';
+import { User } from '../users/entities/user.entity';
+import { Config } from '../config/config.module';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
+    @Inject(CONFIG) private readonly config: Config,
   ) { }
 
   async decodeToken(token: string) {
     return await this.jwtService.verify(token, {
-      secret: configFactory().secretOrKey,
+      secret: this.config.secretOrKey,
     });
   }
 
@@ -26,7 +27,7 @@ export class TokenService {
     if (!decoded) {
       throw new UnauthorizedException();
     }
-    return true;
+    return decoded;
   }
 
   private async createJwtToken(user: User, expInTime: number) {
@@ -38,7 +39,7 @@ export class TokenService {
         exp: expIn,
         role: user.role,
       },
-      { secret: configFactory().secretOrKey },
+      { secret: this.config.secretOrKey },
     );
   }
 

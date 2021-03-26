@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from '../users/dto/login-user.dto';
@@ -9,12 +9,15 @@ import { BadRequestException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Role } from '../users/roles/role.enum';
+import { Config } from '../config/config.module';
+import { CONFIG } from '../../constants';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private tokenService: TokenService,
+    @Inject(CONFIG) private readonly config: Config,
   ) {}
 
   async createUser(user: CreateUserDto) {
@@ -28,8 +31,8 @@ export class AuthService {
 
   async createAdmin() {
     const userModel = {
-      email: 'admintest2@gmail.com',
-      passwordHash: 'adminskiy',
+      email: this.config.adminName,
+      passwordHash: this.config.adminPassword,
       role: Role.ADMIN,
     };
 

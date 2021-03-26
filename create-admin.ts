@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { AuthService } from './auth/auth.service';
+import { AppModule } from './src/app.module';
+import { AuthService } from './src/auth/auth.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
