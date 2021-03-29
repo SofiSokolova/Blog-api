@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { LoginUserDto } from '../users/dto/login-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateRefreshTokenDto } from '../token/dto/refresh-token.dto';
@@ -8,7 +8,7 @@ import { CreateRefreshTokenDto } from '../token/dto/refresh-token.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post('signup')
   async create(@Body() user: CreateUserDto) {
     await this.authService.createUser(user);
   }

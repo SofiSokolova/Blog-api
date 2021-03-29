@@ -6,9 +6,6 @@ import { Role } from './roles/role.enum';
 @UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
-
   @Roles(Role.ADMIN)
   @Get('profile')
   getProfile(@Request() req) {

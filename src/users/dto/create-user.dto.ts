@@ -6,13 +6,13 @@ import {
   MinLength,
 } from 'class-validator';
 import { Match } from '../../decorators/match.decorator';
-import { REG_EXP_FOR_PASS_VALIDATION } from '../../../constants';
+import { REG_EXP_FOR_PASS_VALIDATION } from '../../constants';
 import {
   passDoesNotMatch,
   passTooLong,
   passTooShort,
   passTooWeak,
-} from '../../../error-messages';
+} from '../../error-messages';
 
 export class CreateUserDto {
   @IsEmail()

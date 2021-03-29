@@ -5,12 +5,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { REG_EXP_FOR_PASS_VALIDATION } from '../../../constants';
-import {
-  passTooLong,
-  passTooShort,
-  passTooWeak,
-} from '../../../error-messages';
+import { REG_EXP_FOR_PASS_VALIDATION } from '../../constants';
+import { passTooLong, passTooShort, passTooWeak } from '../../error-messages';
 
 export class LoginUserDto {
   @IsEmail()

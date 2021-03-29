@@ -32,9 +32,7 @@ export class AuthGuard implements CanActivate {
     const accessToken = request.headers.authorization.replace('Bearer ', '');
     const decoded = await this.tokenService.validateAccessToken(accessToken);
     const user = await this.usersService.findOneById(decoded.id);
-    if (requiredRoles.indexOf(user.role) == -1) {
-      return false;
-    }
-    return true;
+
+    return requiredRoles.includes(user.role);
   }
 }

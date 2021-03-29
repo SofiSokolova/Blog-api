@@ -15,7 +15,6 @@ export class User extends Model {
     type: DataType.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    unique: true,
     field: 'id',
   })
   id: number;
@@ -43,7 +42,7 @@ export class User extends Model {
   static async generatePasswordHash(user: User) {
     user.passwordHash = await bcrypt.hash(
       user.passwordHash,
-      await bcrypt.genSalt(config.salt),
+      await bcrypt.genSalt(config.auth.salt),
     );
   }
 }

@@ -8,12 +8,12 @@ import { ConfigModule, config } from './config/config.module';
     ConfigModule,
     AuthModule,
     SequelizeModule.forRoot({
-      dialect: 'postgres',
-      host: config.host,
-      port: config.port,
-      username: config.username,
-      password: config.password,
-      database: config.database,
+      dialect: config.db.dialect,
+      host: config.db.host,
+      port: config.db.port,
+      username: config.db.username,
+      password: config.db.password,
+      database: config.db.database,
       autoLoadModels: true,
       logging: true,
       sync: {
