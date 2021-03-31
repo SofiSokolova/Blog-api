@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { Dialect } from 'sequelize/types';
 import 'dotenv/config';
-import { CONFIG } from '../inject-tokens';
+import { CONFIG } from '../core/constants/inject-tokens';
 
 export interface Config {
   db: {

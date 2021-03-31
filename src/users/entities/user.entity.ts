@@ -8,6 +8,9 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Role } from '../roles/role.enum';
 import { config } from '../../config/config.module';
+import { ApiProperty, ApiQuery } from '@nestjs/swagger';
+import { Query } from '@nestjs/common';
+
 
 @Table
 export class User extends Model {
@@ -31,6 +34,9 @@ export class User extends Model {
     allowNull: false,
   })
   passwordHash: string;
+
+/*   @ApiQuery({ name: 'role', enum: Role })
+  async filterByRole(@Query('role') role: Role = Role.USER) {} */
 
   @Column({
     type: DataType.STRING, //TODO DataType.ENUM({ values: Object.values(Role) })

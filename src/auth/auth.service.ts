@@ -15,13 +15,13 @@ export class AuthService {
   ) {}
 
   async createUser(userDTO: CreateUserDto) {
-    return await this.usersService.create(userDTO);
+    return this.usersService.create(userDTO);
   }
 
   async login(userDto: LoginUserDto) {
     const user = await this.validateUser(userDto.email, userDto.password);
 
-    return await this.tokenService.getTokens(user);
+    return this.tokenService.getTokens(user);
   }
 
   private async validateUser(email: string, pass: string): Promise<User> {

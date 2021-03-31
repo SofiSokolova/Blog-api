@@ -1,12 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { DAY_IN_MILLISECONDS, ONE_HOUR_IN_MILLISECONDS } from '../constants';
 import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
 import { Config } from '../config/config.module';
-import { CONFIG } from '../inject-tokens';
-
+import { CONFIG } from '../core/constants/inject-tokens';
+import {
+  DAY_IN_MILLISECONDS,
+  ONE_HOUR_IN_SECONDS,
+} from '../core/constants/constants';
 
 @Injectable()
 export class TokenService {
@@ -35,16 +37,9 @@ export class TokenService {
   }
 
   async getTokens(user: User) {
-    const accessToken = await this.createJwtToken(
-      user,
-      ONE_HOUR_IN_MILLISECONDS / 1000,
-    );
+    const accessToken = await this.createJwtToken(user, ONE_HOUR_IN_SECONDS);
     const refreshToken = await this.createJwtToken(user, DAY_IN_MILLISECONDS);
-    await this.setToken(
-      accessToken,
-      `${user.id}_access`,
-      ONE_HOUR_IN_MILLISECONDS / 1000,
-    );
+    await this.setToken(accessToken, `${user.id}_access`, ONE_HOUR_IN_SECONDS);
     await this.setToken(
       refreshToken,
       `${user.id}_refresh`,
@@ -58,12 +53,10 @@ export class TokenService {
   }
 
   async findTokenByKey(key: string): Promise<string> {
-    return await this.cache.get(key);
+    return this.cache.get(key);
   }
 
   private async createJwtToken(user: User, expInTime: number) {
-    const expiration = new Date();
-    const expIn = expiration.setTime(expiration.getTime() + expInTime);
     return this.jwtService.sign(
       {
         id: user.id,
@@ -71,7 +64,7 @@ export class TokenService {
       },
       {
         secret: this.config.auth.secretKey,
-        expiresIn: expIn,
+        expiresIn: expInTime,
       } as JwtSignOptions,
     );
   }
@@ -85,6 +78,6 @@ export class TokenService {
       ttl: expInTime,
     });
 
-    return await this.findTokenByKey(key);
+    return this.findTokenByKey(key);
   }
 }

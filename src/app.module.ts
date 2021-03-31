@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, config } from './config/config.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './core/http-exception.filter';
 
 @Module({
   imports: [
@@ -20,6 +22,12 @@ import { ConfigModule, config } from './config/config.module';
         alter: true,
       },
     }),
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
   ],
 })
 export class AppModule {}
