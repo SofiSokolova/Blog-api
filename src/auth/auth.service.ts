@@ -6,6 +6,7 @@ import { TokenService } from '../token/token.service';
 import { User } from '../users/entities/user.entity';
 import { CreateRefreshTokenDto } from '../token/dto/refresh-token.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { REFRESH_TOKEN_KEY } from '../core/constants/constants';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
       refreshTokenDto.tokenHash,
     );
     const refreshToken = await this.tokenService.findTokenByKey(
-      `${decoded.id}_refresh`,
+      `${decoded.id}${REFRESH_TOKEN_KEY}`,
     );
     if (!refreshToken || refreshToken !== refreshTokenDto.tokenHash) {
       throw new UnauthorizedException();

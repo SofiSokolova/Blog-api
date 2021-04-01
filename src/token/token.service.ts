@@ -6,8 +6,10 @@ import { User } from '../users/entities/user.entity';
 import { Config } from '../config/config.module';
 import { CONFIG } from '../core/constants/inject-tokens';
 import {
+  ACCESS_TOKEN_KEY,
   DAY_IN_MILLISECONDS,
   ONE_HOUR_IN_SECONDS,
+  REFRESH_TOKEN_KEY,
 } from '../core/constants/constants';
 
 @Injectable()
@@ -26,7 +28,9 @@ export class TokenService {
 
   async validateAccessToken(token: string): Promise<any> {
     const decoded = await this.verifyToken(token);
-    const accessToken = await this.findTokenByKey(`${decoded.id}_access`);
+    const accessToken = await this.findTokenByKey(
+      `${decoded.id}${ACCESS_TOKEN_KEY}`,
+    );
     if (!accessToken || accessToken !== token) {
       throw new UnauthorizedException();
     }
@@ -39,10 +43,14 @@ export class TokenService {
   async getTokens(user: User) {
     const accessToken = await this.createJwtToken(user, ONE_HOUR_IN_SECONDS);
     const refreshToken = await this.createJwtToken(user, DAY_IN_MILLISECONDS);
-    await this.setToken(accessToken, `${user.id}_access`, ONE_HOUR_IN_SECONDS);
+    await this.setToken(
+      accessToken,
+      `${user.id}${ACCESS_TOKEN_KEY}`,
+      ONE_HOUR_IN_SECONDS,
+    );
     await this.setToken(
       refreshToken,
-      `${user.id}_refresh`,
+      `${user.id}${REFRESH_TOKEN_KEY}`,
       DAY_IN_MILLISECONDS,
     );
 
