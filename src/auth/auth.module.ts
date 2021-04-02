@@ -5,9 +5,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { CacheModule } from '../cache/cache.module';
 import { TokenModule } from '../token/token.module';
+import { CoreModule } from '../core/core.module';
 
 @Module({
-  imports: [PassportModule, UsersModule, TokenModule, CacheModule],
+  imports: [PassportModule, UsersModule, TokenModule, CacheModule, CoreModule],
   controllers: [AuthController],
   providers: [AuthService],
   exports: [AuthService],

@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     @Inject(CONFIG) private readonly config: Config,
-  ) {}
+  ) { }
 
   async create(userDto: CreateUserDto): Promise<User> {
     const userModel = {

@@ -7,7 +7,10 @@ import { Config } from '../config/config.module';
 import { CONFIG } from '../core/constants/inject-tokens';
 import {
   ACCESS_TOKEN_KEY,
+  CONFIRM_TOKEN_KEY,
   DAY_IN_MILLISECONDS,
+  DAY_IN_SECONDS,
+  ONE_HOUR_IN_MILLISECONDS,
   ONE_HOUR_IN_SECONDS,
   REFRESH_TOKEN_KEY,
 } from '../core/constants/constants';
@@ -40,13 +43,31 @@ export class TokenService {
     return decoded;
   }
 
+  async getConfirmToken(userEmail: string) {
+    const token = this.jwtService.sign(
+      {
+        email: userEmail,
+      },
+      {
+        secret: this.config.auth.secretKey,
+        expiresIn: DAY_IN_SECONDS,
+      } as JwtSignOptions,
+    );
+    await this.setToken(
+      token,
+      `${userEmail}${CONFIRM_TOKEN_KEY}`,
+      DAY_IN_MILLISECONDS,
+    );
+    return token;
+  }
+
   async getTokens(user: User) {
     const accessToken = await this.createJwtToken(user, ONE_HOUR_IN_SECONDS);
-    const refreshToken = await this.createJwtToken(user, DAY_IN_MILLISECONDS);
+    const refreshToken = await this.createJwtToken(user, DAY_IN_SECONDS);
     await this.setToken(
       accessToken,
       `${user.id}${ACCESS_TOKEN_KEY}`,
-      ONE_HOUR_IN_SECONDS,
+      ONE_HOUR_IN_MILLISECONDS,
     );
     await this.setToken(
       refreshToken,
@@ -58,6 +79,10 @@ export class TokenService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async deleteTokenByKey(key: string): Promise<void> {
+    await this.cache.del(key);
   }
 
   async findTokenByKey(key: string): Promise<string> {

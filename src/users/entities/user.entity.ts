@@ -38,6 +38,12 @@ export class User extends Model {
   })
   role: Role;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  confirmed: boolean;
+
   @BeforeCreate
   static async generatePasswordHash(user: User) {
     user.passwordHash = await bcrypt.hash(

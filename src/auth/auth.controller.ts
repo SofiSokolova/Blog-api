@@ -11,6 +11,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
+import { ConfirmTokenDto } from '../token/dto/confirm-token.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -55,5 +56,13 @@ export class AuthController {
   @Post('refresh')
   async refreshTokens(@Body() refreshToken: CreateRefreshTokenDto) {
     return this.authService.updateTokens(refreshToken);
+  }
+
+  @ApiOperation({ summary: 'Confirm email' })
+  @ApiOkResponse({ description: 'Confirmed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @Post('confirm/email')
+  async confirmEmail(@Body() confirmToken: ConfirmTokenDto) {
+    return this.authService.confirmEmail(confirmToken);
   }
 }
