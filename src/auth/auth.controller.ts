@@ -4,14 +4,15 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateRefreshTokenDto } from '../token/dto/refresh-token.dto';
 import {
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { User } from '../users/entities/user.entity';
 import { ConfirmTokenDto } from '../token/dto/confirm-token.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetForgotPasswordDto } from './dto/reset-forgot-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -64,5 +65,31 @@ export class AuthController {
   @Post('confirm/email')
   async confirmEmail(@Body() confirmToken: ConfirmTokenDto) {
     return this.authService.confirmEmail(confirmToken);
+  }
+
+  @ApiOperation({ summary: 'Change password' })
+  @ApiOkResponse({ description: 'Password changed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @Post('changepass')
+  async changePassword(@Body() changePassDto: ChangePasswordDto) {
+    return this.authService.changePassword(changePassDto);
+  }
+
+  @ApiOperation({ summary: 'Forgot password' })
+  @ApiOkResponse({ description: 'Request has been sent' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @Post('forgotpass')
+  async forgotPassword(@Body() forgotPassDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPassDto);
+  }
+
+  @ApiOperation({ summary: 'Forgot password' })
+  @ApiOkResponse({ description: 'Request has been sent' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @Post('resetpass')
+  async resetForgotPassword(
+    @Body() resetForgotPassDto: ResetForgotPasswordDto,
+  ) {
+    return this.authService.resetPassword(resetForgotPassDto);
   }
 }

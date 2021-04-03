@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,

@@ -4,6 +4,7 @@ import {
   Model,
   DataType,
   BeforeCreate,
+  BeforeUpdate,
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../roles/role.enum';
@@ -45,10 +46,13 @@ export class User extends Model {
   confirmed: boolean;
 
   @BeforeCreate
+  @BeforeUpdate
   static async generatePasswordHash(user: User) {
-    user.passwordHash = await bcrypt.hash(
-      user.passwordHash,
-      await bcrypt.genSalt(config.auth.salt),
-    );
+    if (user.changed('passwordHash')) {
+      user.passwordHash = await bcrypt.hash(
+        user.passwordHash,
+        await bcrypt.genSalt(config.auth.salt),
+      );
+    }
   }
 }

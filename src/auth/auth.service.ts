@@ -6,31 +6,55 @@ import { TokenService } from '../token/token.service';
 import { User } from '../users/entities/user.entity';
 import { CreateRefreshTokenDto } from '../token/dto/refresh-token.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { CONFIRM_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../core/constants/constants';
-import { MailerService } from '@nestjs-modules/mailer';
+import {
+  CONFIRM_TOKEN_KEY,
+  DAY_IN_MILLISECONDS,
+  DAY_IN_SECONDS,
+  FORGOT_TOKEN_KEY,
+  ONE_HOUR_IN_MILLISECONDS,
+  REFRESH_TOKEN_KEY,
+} from '../core/constants/constants';
 import { ConfirmTokenDto } from '../token/dto/confirm-token.dto';
+import {
+  notConfirmedEmail,
+  wrongPass,
+} from 'src/core/constants/error-messages';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { MailService } from 'src/core/mailer.service';
+import { ResetForgotPasswordDto } from './dto/reset-forgot-password.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private tokenService: TokenService,
-    private readonly mailerService: MailerService,
+    private readonly mailService: MailService,
   ) {}
 
   async createUser(userDTO: CreateUserDto) {
-    const tokenConfirm = await this.tokenService.getConfirmToken(userDTO.email);
-    await this.mailerService.sendMail({
-      to: `${userDTO.email}`, // list of receivers
-      subject: 'Testing Nest MailerModule ✔', // Subject line
-      text: `${tokenConfirm}`, // plaintext body
-    });
+    const { email } = userDTO;
+
+    const tokenConfirm = await this.tokenService.createJwtToken(
+      { email },
+      DAY_IN_SECONDS,
+    );
+
+    await this.tokenService.setToken(
+      tokenConfirm,
+      `${email}${CONFIRM_TOKEN_KEY}`,
+      DAY_IN_MILLISECONDS,
+    );
+    await this.mailService.sendMail(email, tokenConfirm);
+
     return this.usersService.create(userDTO);
   }
 
   async login(userDto: LoginUserDto) {
     const user = await this.validateUser(userDto.email, userDto.password);
-
+    if (!user.confirmed) {
+      throw new UnauthorizedException(notConfirmedEmail);
+    }
     return this.tokenService.getTokens(user);
   }
 
@@ -46,34 +70,79 @@ export class AuthService {
     return user;
   }
 
-  async updateTokens(refreshTokenDto: CreateRefreshTokenDto) {
-    const decoded = await this.tokenService.verifyToken(
-      refreshTokenDto.tokenHash,
+  async updateTokens({ tokenHash }: CreateRefreshTokenDto) {
+    const { id } = await this.tokenService.verifyToken(tokenHash);
+    const redisToken = await this.tokenService.findTokenByKey(
+      `${id}${REFRESH_TOKEN_KEY}`,
     );
-    const refreshToken = await this.tokenService.findTokenByKey(
-      `${decoded.id}${REFRESH_TOKEN_KEY}`,
-    );
-    if (!refreshToken || refreshToken !== refreshTokenDto.tokenHash) {
+    if (!redisToken || redisToken !== tokenHash) {
       throw new UnauthorizedException();
     }
-    const user = await this.usersService.findOneById(decoded.id);
+    const user = await this.usersService.findOneById(id);
 
     return this.tokenService.getTokens(user);
   }
 
+  //TODO: think about how to transfer duplicate lines to another function
+
   async confirmEmail(confirmTokenDto: ConfirmTokenDto) {
-    const decoded = await this.tokenService.verifyToken(
-      confirmTokenDto.confirmToken,
+    const { confirmToken } = confirmTokenDto;
+
+    const { email } = await this.tokenService.verifyToken(confirmToken);
+    const redisToken = await this.tokenService.findTokenByKey(
+      `${email}${CONFIRM_TOKEN_KEY}`,
     );
-    const confirmToken = await this.tokenService.findTokenByKey(
-      `${decoded.email}${CONFIRM_TOKEN_KEY}`,
-    );
-    if (!confirmToken || confirmToken !== confirmTokenDto.confirmToken) {
+    if (!redisToken || redisToken !== confirmToken) {
       throw new UnauthorizedException();
     }
-    await this.tokenService.deleteTokenByKey(confirmToken);
-    const user = await this.usersService.findOneByEmail(decoded.email);
-    user.confirmed = true;
-    user.save();
+    await this.tokenService.deleteTokenByKey(`${email}${CONFIRM_TOKEN_KEY}`);
+    const user = await this.usersService.findOneByEmail(email);
+    await user.update({ confirmed: true });
+  }
+
+  async changePassword(changePassDto: ChangePasswordDto) {
+    const { email, previousPass, newPassConfirm } = changePassDto;
+
+    const user = await this.validateUser(email, previousPass);
+    if (!user) {
+      throw new UnauthorizedException(wrongPass);
+    }
+    await user.update({ passwordHash: newPassConfirm });
+  }
+
+  async forgotPassword(forgotPassDto: ForgotPasswordDto) {
+    const user = await this.usersService.findOneByEmail(forgotPassDto.email);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const { email } = user;
+    const token = await this.tokenService.createJwtToken(
+      { email },
+      DAY_IN_SECONDS,
+    );
+    await this.mailService.sendMail(email, token);
+    await this.tokenService.setToken(
+      token,
+      `${email}${FORGOT_TOKEN_KEY}`,
+      ONE_HOUR_IN_MILLISECONDS,
+    );
+  }
+
+  async resetPassword(resetForgotPassDto: ResetForgotPasswordDto) {
+    const { tokenHash, newPassConfirm } = resetForgotPassDto;
+    const { email } = await this.tokenService.verifyToken(tokenHash);
+    const redisToken = await this.tokenService.findTokenByKey(
+      `${email}${FORGOT_TOKEN_KEY}`,
+    );
+    if (!redisToken || redisToken !== tokenHash) {
+      console.log('tut')
+      throw new UnauthorizedException();
+    }
+    await this.tokenService.deleteTokenByKey(`${email}${FORGOT_TOKEN_KEY}`);
+    const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    await user.update({ passwordHash: newPassConfirm });
   }
 }

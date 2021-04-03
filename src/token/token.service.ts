@@ -43,27 +43,15 @@ export class TokenService {
     return decoded;
   }
 
-  async getConfirmToken(userEmail: string) {
-    const token = this.jwtService.sign(
-      {
-        email: userEmail,
-      },
-      {
-        secret: this.config.auth.secretKey,
-        expiresIn: DAY_IN_SECONDS,
-      } as JwtSignOptions,
-    );
-    await this.setToken(
-      token,
-      `${userEmail}${CONFIRM_TOKEN_KEY}`,
-      DAY_IN_MILLISECONDS,
-    );
-    return token;
-  }
-
   async getTokens(user: User) {
-    const accessToken = await this.createJwtToken(user, ONE_HOUR_IN_SECONDS);
-    const refreshToken = await this.createJwtToken(user, DAY_IN_SECONDS);
+    const accessToken = await this.createJwtToken(
+      { id: user.id, role: user.role },
+      ONE_HOUR_IN_SECONDS,
+    );
+    const refreshToken = await this.createJwtToken(
+      { id: user.id, role: user.role },
+      DAY_IN_SECONDS,
+    );
     await this.setToken(
       accessToken,
       `${user.id}${ACCESS_TOKEN_KEY}`,
@@ -89,20 +77,14 @@ export class TokenService {
     return this.cache.get(key);
   }
 
-  private async createJwtToken(user: User, expInTime: number) {
-    return this.jwtService.sign(
-      {
-        id: user.id,
-        role: user.role,
-      },
-      {
-        secret: this.config.auth.secretKey,
-        expiresIn: expInTime,
-      } as JwtSignOptions,
-    );
+  async createJwtToken(payload: Record<string, any>, expInTime: number) {
+    return this.jwtService.sign(payload, {
+      secret: this.config.auth.secretKey,
+      expiresIn: expInTime,
+    } as JwtSignOptions);
   }
 
-  private async setToken(
+  async setToken(
     token: string,
     key: string,
     expInTime: number,
