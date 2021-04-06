@@ -34,7 +34,7 @@ export class User extends Model {
   passwordHash: string;
 
   @Column({
-    type: DataType.STRING, //TODO DataType.ENUM({ values: Object.values(Role) })
+    type: DataType.ENUM({ values: Object.values(Role) }),
     defaultValue: Role.USER,
   })
   role: Role;
