@@ -13,6 +13,7 @@ import { ConfirmTokenDto } from '../token/dto/confirm-token.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetForgotPasswordDto } from './dto/reset-forgot-password.dto';
+import { IAuthTokenResponse } from '../token/interfaces';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -55,7 +56,9 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Post('refresh')
-  async refreshTokens(@Body() refreshToken: CreateRefreshTokenDto) {
+  async refreshTokens(
+    @Body() refreshToken: CreateRefreshTokenDto,
+  ): Promise<IAuthTokenResponse> {
     return this.authService.updateTokens(refreshToken);
   }
 
@@ -64,7 +67,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Post('confirm/email')
   async confirmEmail(@Body() confirmToken: ConfirmTokenDto) {
-    return this.authService.confirmEmail(confirmToken);
+    await this.authService.confirmEmail(confirmToken);
   }
 
   @ApiOperation({ summary: 'Change password' })

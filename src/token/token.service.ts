@@ -7,7 +7,6 @@ import { Config } from '../config/config.module';
 import { CONFIG } from '../core/constants/inject-tokens';
 import {
   ACCESS_TOKEN_KEY,
-  CONFIRM_TOKEN_KEY,
   DAY_IN_MILLISECONDS,
   DAY_IN_SECONDS,
   ONE_HOUR_IN_MILLISECONDS,

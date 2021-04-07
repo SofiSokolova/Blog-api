@@ -26,5 +26,6 @@ import { HttpExceptionFilter } from './core/http-exception.filter';
       useClass: HttpExceptionFilter,
     },
   ],
+  controllers: [],
 })
 export class AppModule {}

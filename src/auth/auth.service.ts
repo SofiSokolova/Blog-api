@@ -15,14 +15,12 @@ import {
   REFRESH_TOKEN_KEY,
 } from '../core/constants/constants';
 import { ConfirmTokenDto } from '../token/dto/confirm-token.dto';
-import {
-  notConfirmedEmail,
-  wrongPass,
-} from 'src/core/constants/error-messages';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { MailService } from 'src/core/mailer.service';
 import { ResetForgotPasswordDto } from './dto/reset-forgot-password.dto';
+import { IAuthTokenResponse } from '../token/interfaces';
+import { MailService } from '../core/mailer.service';
+import { notConfirmedEmail, wrongPass } from '../core/constants/error-messages';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +68,9 @@ export class AuthService {
     return user;
   }
 
-  async updateTokens({ tokenHash }: CreateRefreshTokenDto) {
+  async updateTokens({
+    tokenHash,
+  }: CreateRefreshTokenDto): Promise<IAuthTokenResponse> {
     const { id } = await this.tokenService.verifyToken(tokenHash);
     const redisToken = await this.tokenService.findTokenByKey(
       `${id}${REFRESH_TOKEN_KEY}`,
@@ -135,7 +135,7 @@ export class AuthService {
       `${email}${FORGOT_TOKEN_KEY}`,
     );
     if (!redisToken || redisToken !== tokenHash) {
-      console.log('tut')
+      console.log('tut');
       throw new UnauthorizedException();
     }
     await this.tokenService.deleteTokenByKey(`${email}${FORGOT_TOKEN_KEY}`);
