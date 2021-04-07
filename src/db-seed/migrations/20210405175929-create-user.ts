@@ -1,7 +1,7 @@
 'use strict';
 import { Role } from '../../users/roles/role.enum';
 export default {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface: any, Sequelize: any) => {
     return queryInterface.createTable('Users', {
       id: {
         type: Sequelize.INTEGER,
@@ -29,7 +29,7 @@ export default {
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface: any, Sequelize: any) => {
     return queryInterface.dropTable('Users');
   },
 };
