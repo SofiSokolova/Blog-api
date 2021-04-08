@@ -1,6 +1,6 @@
-import { Role } from "../users/roles/role.enum";
+import { Role } from '../users/roles/role.enum';
 
-export default class createUser_1617911458349 {
+export default {
   async up(queryInterface: any, Sequelize: any) {
     return queryInterface.createTable('Users', {
       id: {
@@ -27,9 +27,9 @@ export default class createUser_1617911458349 {
         defaultValue: false,
       },
     });
-  };
+  },
 
   async down(queryInterface: any, Sequelize: any) {
     return queryInterface.dropTable('Users');
   },
-}
+};
