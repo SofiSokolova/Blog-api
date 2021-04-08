@@ -1,6 +1,6 @@
 const path = require('path');
 module.exports = {
-   'seeders-path': path.resolve('src/db-seed', 'seeders'),
-   'migrations-path': path.resolve('src/db-seed/js-migrations/db-seed', 'migrations'),
-   'config': path.resolve('src/db-seed', 'config.ts'),
+   'seeders-path': path.resolve('migrations/seeds', 'seeders'),
+   'migrations-path': path.resolve('migrations', 'migrations'),
+   'config': path.resolve('./', 'config.ts'),
 }
