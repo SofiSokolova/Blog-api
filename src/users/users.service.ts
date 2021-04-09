@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CONFIG } from '../inject-tokens';
+import { CONFIG } from '../core/constants/inject-tokens';
 import { Config } from '../config/config.module';
 import { Role } from './roles/role.enum';
 
@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     @Inject(CONFIG) private readonly config: Config,
-  ) {}
+  ) { }
 
   async create(userDto: CreateUserDto): Promise<User> {
     const userModel = {

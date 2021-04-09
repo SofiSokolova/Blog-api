@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateRefreshTokenDto {
+export class ConfirmTokenDto {
   @ApiProperty({
-    description: 'The refresh token hash of the User',
+    description: 'The confirmEmail token hash of the User',
   })
   @IsNotEmpty()
   @IsString()
-  readonly tokenHash: string;
+  readonly confirmToken: string;
 }

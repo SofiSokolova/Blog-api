@@ -1,7 +1,7 @@
 import { CacheModule as BaseCacheModule, Module } from '@nestjs/common';
 import * as redisStore from 'cache-manager-ioredis';
 import { Config, ConfigModule } from '../config/config.module';
-import { CONFIG } from '../inject-tokens';
+import { CONFIG } from '../core/constants/inject-tokens';
 
 @Module({
   imports: [

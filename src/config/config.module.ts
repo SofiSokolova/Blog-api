@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { Dialect } from 'sequelize/types';
 import 'dotenv/config';
-import { CONFIG } from '../inject-tokens';
+import { CONFIG } from '../core/constants/inject-tokens';
 
 export interface Config {
   db: {
@@ -23,6 +23,12 @@ export interface Config {
   createAdmin: {
     adminName: string;
     adminPassword: string;
+  };
+  nodemailer: {
+    email: string;
+    password: string;
+    host: string;
+    port: number;
   };
 }
 
@@ -46,6 +52,12 @@ export const config: Config = {
   createAdmin: {
     adminName: process.env.CREATE_ADMIN_EMAIL,
     adminPassword: process.env.CREATE_ADMIN_PASSWORD,
+  },
+  nodemailer: {
+    email: process.env.MAILER_USER,
+    password: process.env.MAILER_PASS,
+    host: process.env.MAILER_HOST,
+    port: parseInt(process.env.MAILER_PORT, 10),
   },
 };
 

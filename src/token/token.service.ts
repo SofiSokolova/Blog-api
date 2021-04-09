@@ -1,12 +1,18 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { DAY_IN_MILLISECONDS, ONE_HOUR_IN_MILLISECONDS } from '../constants';
 import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
 import { Config } from '../config/config.module';
-import { CONFIG } from '../inject-tokens';
-
+import { CONFIG } from '../core/constants/inject-tokens';
+import {
+  ACCESS_TOKEN_KEY,
+  DAY_IN_MILLISECONDS,
+  DAY_IN_SECONDS,
+  ONE_HOUR_IN_MILLISECONDS,
+  ONE_HOUR_IN_SECONDS,
+  REFRESH_TOKEN_KEY,
+} from '../core/constants/constants';
 
 @Injectable()
 export class TokenService {
@@ -24,7 +30,9 @@ export class TokenService {
 
   async validateAccessToken(token: string): Promise<any> {
     const decoded = await this.verifyToken(token);
-    const accessToken = await this.findTokenByKey(`${decoded.id}_access`);
+    const accessToken = await this.findTokenByKey(
+      `${decoded.id}${ACCESS_TOKEN_KEY}`,
+    );
     if (!accessToken || accessToken !== token) {
       throw new UnauthorizedException();
     }
@@ -36,18 +44,21 @@ export class TokenService {
 
   async getTokens(user: User) {
     const accessToken = await this.createJwtToken(
-      user,
-      ONE_HOUR_IN_MILLISECONDS / 1000,
+      { id: user.id, role: user.role },
+      ONE_HOUR_IN_SECONDS,
     );
-    const refreshToken = await this.createJwtToken(user, DAY_IN_MILLISECONDS);
+    const refreshToken = await this.createJwtToken(
+      { id: user.id, role: user.role },
+      DAY_IN_SECONDS,
+    );
     await this.setToken(
       accessToken,
-      `${user.id}_access`,
-      ONE_HOUR_IN_MILLISECONDS / 1000,
+      `${user.id}${ACCESS_TOKEN_KEY}`,
+      ONE_HOUR_IN_MILLISECONDS,
     );
     await this.setToken(
       refreshToken,
-      `${user.id}_refresh`,
+      `${user.id}${REFRESH_TOKEN_KEY}`,
       DAY_IN_MILLISECONDS,
     );
 
@@ -57,26 +68,22 @@ export class TokenService {
     };
   }
 
+  async deleteTokenByKey(key: string): Promise<void> {
+    await this.cache.del(key);
+  }
+
   async findTokenByKey(key: string): Promise<string> {
-    return await this.cache.get(key);
+    return this.cache.get(key);
   }
 
-  private async createJwtToken(user: User, expInTime: number) {
-    const expiration = new Date();
-    const expIn = expiration.setTime(expiration.getTime() + expInTime);
-    return this.jwtService.sign(
-      {
-        id: user.id,
-        role: user.role,
-      },
-      {
-        secret: this.config.auth.secretKey,
-        expiresIn: expIn,
-      } as JwtSignOptions,
-    );
+  async createJwtToken(payload: Record<string, any>, expInTime: number) {
+    return this.jwtService.sign(payload, {
+      secret: this.config.auth.secretKey,
+      expiresIn: expInTime,
+    } as JwtSignOptions);
   }
 
-  private async setToken(
+  async setToken(
     token: string,
     key: string,
     expInTime: number,
@@ -85,6 +92,6 @@ export class TokenService {
       ttl: expInTime,
     });
 
-    return await this.findTokenByKey(key);
+    return this.findTokenByKey(key);
   }
 }

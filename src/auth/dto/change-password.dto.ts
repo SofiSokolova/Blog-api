@@ -16,7 +16,7 @@ import {
 import { REG_EXP_FOR_PASS_VALIDATION } from '../../core/constants/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserDto {
+export class ChangePasswordDto {
   @ApiProperty({
     example: 'top.user@gmail.com',
     description: 'The email of the User',
@@ -26,23 +26,32 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: 'passwOrd1',
-    description: 'The password of the User',
+    description: 'The previous password of the User',
   })
   @IsString()
   @MinLength(8, { message: passTooShort })
   @MaxLength(20, { message: passTooLong })
-  @Matches(REG_EXP_FOR_PASS_VALIDATION, {
-    message: passTooWeak,
-  })
-  readonly password: string;
+  readonly previousPass: string;
 
   @ApiProperty({
-    example: 'passwOrd1',
-    description: 'The password confirm of the User',
+    example: 'passwOrd2',
+    description: 'The new password of the User',
   })
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  @Match('password', { message: passDoesNotMatch })
-  readonly passwordConfirm: string;
+  @Matches(REG_EXP_FOR_PASS_VALIDATION, {
+    message: passTooWeak,
+  })
+  readonly newPass: string;
+
+  @ApiProperty({
+    example: 'passwOrd2',
+    description: 'The new password confirm of the User',
+  })
+  @IsString()
+  @MinLength(4)
+  @MaxLength(20)
+  @Match('newPass', { message: passDoesNotMatch })
+  readonly newPassConfirm: string;
 }
