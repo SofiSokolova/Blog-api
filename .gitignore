@@ -34,4 +34,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 .env
 
-/src/db-seed/js-migrations
+/src/db/js-migrations

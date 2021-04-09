@@ -30,7 +30,7 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async createUser(userDTO: CreateUserDto) {
+  async createUser(userDTO: CreateUserDto): Promise<void> {
     const { email } = userDTO;
 
     const tokenConfirm = await this.tokenService.createJwtToken(
@@ -45,10 +45,10 @@ export class AuthService {
     );
     await this.mailService.sendMail(email, tokenConfirm);
 
-    return this.usersService.create(userDTO);
+    await this.usersService.create(userDTO);
   }
 
-  async login(userDto: LoginUserDto) {
+  async login(userDto: LoginUserDto): Promise<IAuthTokenResponse> {
     const user = await this.validateUser(userDto.email, userDto.password);
     if (!user.confirmed) {
       throw new UnauthorizedException(notConfirmedEmail);
@@ -85,7 +85,7 @@ export class AuthService {
 
   //TODO: think about how to transfer duplicate lines to another function
 
-  async confirmEmail(confirmTokenDto: ConfirmTokenDto) {
+  async confirmEmail(confirmTokenDto: ConfirmTokenDto): Promise<void> {
     const { confirmToken } = confirmTokenDto;
 
     const { email } = await this.tokenService.verifyToken(confirmToken);
@@ -100,7 +100,7 @@ export class AuthService {
     await user.update({ confirmed: true });
   }
 
-  async changePassword(changePassDto: ChangePasswordDto) {
+  async changePassword(changePassDto: ChangePasswordDto): Promise<void> {
     const { email, previousPass, newPassConfirm } = changePassDto;
 
     const user = await this.validateUser(email, previousPass);
@@ -110,7 +110,7 @@ export class AuthService {
     await user.update({ passwordHash: newPassConfirm });
   }
 
-  async forgotPassword(forgotPassDto: ForgotPasswordDto) {
+  async forgotPassword(forgotPassDto: ForgotPasswordDto): Promise<void> {
     const user = await this.usersService.findOneByEmail(forgotPassDto.email);
     if (!user) {
       throw new UnauthorizedException();
@@ -128,7 +128,9 @@ export class AuthService {
     );
   }
 
-  async resetPassword(resetForgotPassDto: ResetForgotPasswordDto) {
+  async resetPassword(
+    resetForgotPassDto: ResetForgotPasswordDto,
+  ): Promise<void> {
     const { tokenHash, newPassConfirm } = resetForgotPassDto;
     const { email } = await this.tokenService.verifyToken(tokenHash);
     const redisToken = await this.tokenService.findTokenByKey(

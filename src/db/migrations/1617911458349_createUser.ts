@@ -1,35 +1,37 @@
-import { Role } from '../users/roles/role.enum';
+import { Role } from '../../users/roles/role.enum';
+import { QueryInterface } from 'sequelize';
+import { DataType } from 'sequelize-typescript';
 
 export default {
-  async up(queryInterface: any, Sequelize: any) {
+  async up(queryInterface: QueryInterface) {
     return queryInterface.createTable('Users', {
       id: {
-        type: Sequelize.INTEGER,
+        type: DataType.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
       email: {
-        type: Sequelize.STRING,
+        type: DataType.STRING,
         allowNull: false,
         unique: true,
       },
       passwordHash: {
-        type: Sequelize.STRING,
+        type: DataType.STRING,
         allowNull: false,
       },
       role: {
-        type: Sequelize.ENUM({ values: Object.values(Role) }),
+        type: DataType.ENUM({ values: Object.values(Role) }),
         defaultValue: Role.USER,
       },
       confirmed: {
-        type: Sequelize.BOOLEAN,
+        type: DataType.BOOLEAN,
         defaultValue: false,
       },
     });
   },
 
-  async down(queryInterface: any, Sequelize: any) {
+  async down(queryInterface: QueryInterface) {
     return queryInterface.dropTable('Users');
   },
 };
