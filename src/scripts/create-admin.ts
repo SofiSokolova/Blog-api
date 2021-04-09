@@ -5,8 +5,8 @@ const name = process.argv[2].replace('name=', '') as any;
 const timestamp = moment().valueOf();
 
 function create() {
-  fs.writeFileSync(`src/db/migrations/${timestamp}_${name}.ts`, migrationData);
-  console.log('Migration created successfully');
+  fs.writeFileSync(`src/db/seeds/${timestamp}_${name}.ts`, migrationData);
+  console.log('Admin created successfully');
 }
 
 const migrationData = `

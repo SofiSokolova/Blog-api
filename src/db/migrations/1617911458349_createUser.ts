@@ -1,9 +1,9 @@
 import { Role } from '../../users/roles/role.enum';
-import { QueryInterface } from 'sequelize';
+import { QueryInterface, Sequelize } from 'sequelize';
 import { DataType } from 'sequelize-typescript';
 
 export default {
-  async up(queryInterface: QueryInterface) {
+  async up(queryInterface: QueryInterface, sequelize: Sequelize) {
     return queryInterface.createTable('Users', {
       id: {
         type: DataType.INTEGER,
@@ -31,7 +31,7 @@ export default {
     });
   },
 
-  async down(queryInterface: QueryInterface) {
+  async down(queryInterface: QueryInterface, sequelize: Sequelize) {
     return queryInterface.dropTable('Users');
   },
 };

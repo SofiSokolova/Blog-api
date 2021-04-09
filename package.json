@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:migration": "nest build --config tsconfig.migration.json && sequelize db:migrate",
-    "migration:create": "ts-node src/scripts/create-migration.ts"
+    "migration:create": "ts-node src/scripts/create-migration.ts",
+    "admin:create": "ts-node src/scripts/create-admin.ts"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.5.1",
