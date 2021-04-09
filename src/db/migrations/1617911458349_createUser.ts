@@ -29,6 +29,32 @@ export default {
         defaultValue: false,
       },
     });
+
+   /* return queryInterface.createTable('Users', {
+      id: {
+        type: DataType.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      email: {
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      passwordHash: {
+        type: DataType.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: DataType.ENUM({ values: Object.values(Role) }),
+        defaultValue: Role.USER,
+      },
+      confirmed: {
+        type: DataType.BOOLEAN,
+        defaultValue: false,
+      },
+    });*/
   },
 
   async down(queryInterface: QueryInterface, sequelize: Sequelize) {
